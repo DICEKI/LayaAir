@@ -560,12 +560,12 @@ export class Button extends UIComponent implements ISelect {
 
         if (this._autoSize) {
             if ((kind & TransformKind.Width) != 0) {
-                this._graphics.width = this._width;
+                this.thisGraphics().width = this._width;
                 this._text && (this._text.width = this._width);
             }
 
             if ((kind & TransformKind.Height) != 0) {
-                this._graphics.height = this._height;
+                this.thisGraphics().height = this._height;
                 this._text && (this._text.height = this._height);
             }
         }
