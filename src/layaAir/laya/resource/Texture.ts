@@ -80,7 +80,6 @@ export class Texture extends Resource {
 
     /**
      * 九宫格
-     * @internal
      */
     _sizeGrid?: Array<number>;
     /**
