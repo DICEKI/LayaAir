@@ -97,6 +97,11 @@ export class List extends Box {
      */
     cacheContent: boolean;
 
+    /**单元格的宽度 cell.width+spaceX*/
+    protected _cellWidth: number = 0;
+    /**单元格的宽度 cell.height+spaceY*/
+    protected _cellHeight: number = 0;
+
     /**
      * @en The current page number of the list.
      * @zh 列表的当前页码。
@@ -417,6 +422,25 @@ export class List extends Box {
         this._top.graphics.clear();
         this._content.graphics.clear();
         this._array = value || [];
+
+        if (!this._itemRender) {
+            //没有_itemRender，则不处理下部逻辑
+            return;
+        }
+
+        /**
+         * @author Fengjing
+         * @date 2021-07-02
+         * 支持渲染器大小不固定的情况
+         */
+        let cell: UIComponent = this._getOneCell();
+        let cellWidth: Number = (cell.width + this._spaceX) || 1;
+        let cellHeight: Number = (cell.height + this._spaceY) || 1;
+        if (this._cellWidth != cellWidth || this._cellHeight != cellHeight) {
+            this.changeCells();
+            return;
+        }
+
         this._preLen = this._array.length;
         let length = this._array.length;
         this.totalPage = Math.ceil(length / (this.repeatX * this.repeatY));
@@ -509,6 +533,9 @@ export class List extends Box {
             // this._offset.setTo(item._x, item._y, item.width, item.height);
             if (this.cacheContent) return item;
             this._cells.push(item);
+        }
+        if (this._array != null && this._array.length > 0 && this._cells[0].dataSource == null) {
+            this._cells[0].dataSource = this._array[0];
         }
         return this._cells[0];
     }
@@ -651,6 +678,8 @@ export class List extends Box {
 
             let cellWidth = (cell.width + this._spaceX) || 1;
             let cellHeight = (cell.height + this._spaceY) || 1;
+            this._cellWidth = cellWidth;
+            this._cellHeight = cellHeight;
             if (this._width > 0) this._repeatX2 = this._isVertical ? Math.round(this._width / cellWidth) : Math.ceil(this._width / cellWidth);
             if (this._height > 0) this._repeatY2 = this._isVertical ? Math.ceil(this._height / cellHeight) : Math.round(this._height / cellHeight);
 
@@ -677,8 +706,6 @@ export class List extends Box {
                 this.array = this._array;
                 this.runCallLater(this.renderItems);
             }
-            else
-                this.changeSelectStatus();
         }
     }
 
@@ -705,6 +732,9 @@ export class List extends Box {
      * @param e 事件对象。
      */
     protected onCellMouse(e: Event): void {
+        if (this._cells == null) {
+            return null;
+        }
         if (e.type === Event.MOUSE_DOWN) this._isMoved = false;
         let cell = (<UIComponent>e.currentTarget);
         let index = this._startIndex + this._cells.indexOf(cell);
@@ -1144,6 +1174,20 @@ export class List extends Box {
         this._offset.y = top;
         this._offset.width = right - left;
         this._offset.height = bottom - top;
+    }
+
+    /**
+     * <p>单元格的宽度 = cell.width + spaceX</p>
+     */
+    get cellWidth(): number {
+        return this._cellWidth;
+    }
+
+    /**
+     * <p>单元格的高度 = cell.height + spaceY</p>
+     */
+    get cellHeight(): number {
+        return this._cellHeight;
     }
 
     /** @internal @blueprintEvent */
