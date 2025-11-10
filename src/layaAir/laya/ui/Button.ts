@@ -24,6 +24,9 @@ import { TransformKind } from "../display/SpriteConst";
  * @blueprintInheritable
  */
 export class Button extends UIComponent implements ISelect {
+
+    static globalMouseDownHook: Handler;
+
     /**
      * @en Controls whether the button can toggle its display state. When the value is true, the display state can be toggled by clicking, such as switching between selected and unselected states.
      * @zh 用于控制按钮是否可切换显示状态；值为 true 时，才可以在运行后通过点击切换显示状态。例如选中状态和未选中状态。
