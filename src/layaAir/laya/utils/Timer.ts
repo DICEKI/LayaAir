@@ -59,6 +59,15 @@ export class Timer {
     }
 
     /**
+     * 提供一个按照时间间隔更新的方法
+     * @param delay
+     */
+    setInterval(delay: number): void {
+        Timer.gSysTimer && Timer.gSysTimer.clear(this, this._update);
+        Timer.gSysTimer && Timer.gSysTimer.loop(delay, this, this._update);
+    }
+
+    /**
      * @en The time since last frame (unit: milliseconds).
      * @zh 获取最后一帧的时间（单位：毫秒）。
      */
