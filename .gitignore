@@ -15,6 +15,7 @@ package-lock.json
 /docTool/dist
 docs
 .svn
+.idea
 build-cmd.bat
 build-compile.bat
 build-install.bat
