@@ -1,21 +1,22 @@
-import { Node } from './../display/Node';
-import { UIComponent } from "./UIComponent";
-import { ISelect } from "./ISelect";
-import { Styles } from "./Styles";
-import { HideFlags } from "../Const"
-import { Text } from "../display/Text"
-import { Event } from "../events/Event"
-import { Loader } from "../net/Loader"
-import { Texture } from "../resource/Texture"
-import { AutoBitmap } from "./AutoBitmap"
-import { UIUtils } from "./UIUtils"
-import { Handler } from "../utils/Handler"
-import { ILaya } from "../../ILaya";
-import { URL } from "../net/URL";
-import { Image } from "./Image";
-import { ButtonEffect } from "../effect/ButtonEffect";
-import { LayaEnv } from '../../LayaEnv';
-import { TransformKind } from "../display/SpriteConst";
+import {ChildType, Node} from './../display/Node';
+import {UIComponent} from "./UIComponent";
+import {ISelect} from "./ISelect";
+import {Styles} from "./Styles";
+import {HideFlags} from "../Const"
+import {Text} from "../display/Text"
+import {Event} from "../events/Event"
+import {Loader} from "../net/Loader"
+import {Texture} from "../resource/Texture"
+import {AutoBitmap} from "./AutoBitmap"
+import {UIUtils} from "./UIUtils"
+import {Handler} from "../utils/Handler"
+import {ILaya} from "../../ILaya";
+import {URL} from "../net/URL";
+import {Image} from "./Image";
+import {ButtonEffect} from "../effect/ButtonEffect";
+import {LayaEnv} from '../../LayaEnv';
+import {TransformKind} from "../display/SpriteConst";
+
 /**
  * @en The Button component is used to represent a button with multiple states. The Button component can display a text label, an icon, or both.
  * The states can be single-state, two-state (normal, pressed), or three-state (normal, hover, pressed). By default, it is three-state.
@@ -191,7 +192,7 @@ export class Button extends UIComponent implements ISelect {
     }
 
     set selected(value: boolean) {
-         const state = value ? 2 : 0;
+        const state = value ? 2 : 0;
         // 通过双重检查确保：
         // this._selected 与 value 一致。
         // this.state 与 value 对应的状态码（2 或 0）一致。
@@ -204,11 +205,11 @@ export class Button extends UIComponent implements ISelect {
 
 
     /**
-      * @en The text color of the button in each state.
-      * Format: "upColor,overColor,downColor".
-      * @zh 表示按钮各个状态下的文本颜色。
-      * 格式: "upColor,overColor,downColor"。
-      */
+     * @en The text color of the button in each state.
+     * Format: "upColor,overColor,downColor".
+     * @zh 表示按钮各个状态下的文本颜色。
+     * 格式: "upColor,overColor,downColor"。
+     */
     get labelColors(): string {
         return this._labelColors.join(",");
     }
@@ -227,6 +228,7 @@ export class Button extends UIComponent implements ISelect {
     get strokeColors(): string {
         return this._strokeColors ? this._strokeColors.join(",") : "";
     }
+
     set strokeColors(value: string) {
         this._strokeColors = value ? UIUtils.fillArray(Styles.buttonLabelColors, value, String) : null;
         this._setStateChanged();
@@ -371,6 +373,7 @@ export class Button extends UIComponent implements ISelect {
         this.createText();
         return this._text;
     }
+
     set text(value: Text) {
         if (typeof (value) == "string") {
             this._text && (this._text.text = value);
@@ -379,8 +382,8 @@ export class Button extends UIComponent implements ISelect {
 
     /**
      * @en The size grid of the texture.
-     * The size grid is a 3x3 division of the texture, allowing it to be scaled without distorting the corners and edges. 
-     * The array contains five values representing the top, right, bottom, and left margins, and whether to repeat the fill (0: no repeat, 1: repeat). 
+     * The size grid is a 3x3 division of the texture, allowing it to be scaled without distorting the corners and edges.
+     * The array contains five values representing the top, right, bottom, and left margins, and whether to repeat the fill (0: no repeat, 1: repeat).
      * The values are separated by commas. For example: "6,6,6,6,1".
      * @zh 皮肤纹理的九宫格数据。
      * 九宫格是一种将纹理分成3x3格的方式，使得纹理缩放时保持角和边缘不失真。
@@ -485,6 +488,7 @@ export class Button extends UIComponent implements ISelect {
             this._text.hideFlags = HideFlags.HideAndDontSave;
         }
     }
+
     protected initialize(): void {
         this.on(Event.MOUSE_OVER, this, this.onMouse);
         this.on(Event.MOUSE_OUT, this, this.onMouse);
@@ -529,13 +533,11 @@ export class Button extends UIComponent implements ISelect {
                     if (sk == this._skin && !this.destroyed)
                         this._skinLoaded(tex);
                 });
-            }
-            else {
+            } else {
                 this._skinLoaded(tex);
                 return Promise.resolve();
             }
-        }
-        else {
+        } else {
             this._skinLoaded(null);
             return Promise.resolve();
         }
@@ -633,6 +635,7 @@ export class Button extends UIComponent implements ISelect {
             if (this._strokeColors) this._text.strokeColor = this._strokeColors[index];
         }
     }
+
     protected _setStateChanged(): void {
         if (!this._stateChanged) {
             this._stateChanged = true;
@@ -648,8 +651,7 @@ export class Button extends UIComponent implements ISelect {
         if (typeof (value) == 'number' || typeof (value) == 'string') {
             this._dataSource = value;
             this.label = value + "";
-        }
-        else
+        } else
             super.set_dataSource(value);
     }
 
@@ -662,15 +664,11 @@ export class Button extends UIComponent implements ISelect {
 
     /**
      * 根据子节点的名字，获取子节点对象。
-     * @param	name 子节点的名字。
-     * @return	节点对象。
+     * @param    name 子节点的名字。
+     * @return    节点对象。
      */
-    override getChildByName(name: string): Node {
-        for (let child of this.content._children) {
-            if (child && child.name === name)
-                return child;
-        }
-        return null;
+    override getChildByName<T extends Node = ChildType<this>>(name: string, classType?: new (...args: any[]) => T): T {
+        return this.content.getChildByName(name, classType);
     }
 
     /**
@@ -691,4 +689,4 @@ export class Button extends UIComponent implements ISelect {
     };
 }
 
-const stateMap: any = { "mouseup": 0, "mouseover": 1, "mousedown": 2, "mouseout": 0 };
+const stateMap: any = {"mouseup": 0, "mouseover": 1, "mousedown": 2, "mouseout": 0};
