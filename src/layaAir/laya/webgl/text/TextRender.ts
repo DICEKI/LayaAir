@@ -61,6 +61,7 @@ export class TextRender {
         let cacheKey = (curFont.id * 10000) + fontSize + (bold ? "b_" : "_");
         let colorNum = ColorUtils.create(color).numColor;
         let tint = stroke > 0 || !charMode && hasEmoji; //染色的条件： 有描边 或 非字符模式下且包含emoji
+        tint = true; // canvas使用纯白色字体由于边缘抗锯齿的灰度值问题，用顶点色上色后，会比黑色更粗一些，目前屏蔽掉这个
         if (tint)
             cacheKey += colorNum + "_";
         if (stroke > 0)
