@@ -1,4 +1,6 @@
 import { Utils } from "./Utils";
+import { ILaya } from "../../ILaya";
+import { Event } from "../events/Event";
 
 /**
  * @en The `Timer` class is responsible for time management. It is a singleton and should not be instantiated manually. Access it via `Laya.timer`
@@ -476,6 +478,12 @@ class TimerHandler {
         let args: any[] = this.args;
         withClear && this.clear();
         if (method == null) return;
-        args ? method.apply(caller, args) : method.call(caller);
+        try {
+            args ? method.apply(caller, args) : method.call(caller);
+        }catch (err) {
+            ILaya.stage.event(Event.ERROR, err);
+            console.error(err);
+        }
+
     }
 }
