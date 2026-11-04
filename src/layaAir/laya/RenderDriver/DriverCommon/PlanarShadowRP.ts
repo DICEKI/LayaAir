@@ -1,14 +1,11 @@
 import { Camera } from "../../d3/core/Camera";
 import { Vector3 } from "../../maths/Vector3";
-import { Vector4 } from "../../maths/Vector4";
-import { Viewport } from "../../maths/Viewport";
 import { RenderListQueue } from "./RenderListQueue";
 import { ISceneRenderManager } from "../DriverDesign/3DRenderPass/ISceneRenderManager";
 import { WebBaseRenderNode } from "../RenderModuleData/WebModuleData/3D/WebBaseRenderNode";
 import { WebGLRenderContext3D } from "../WebGLDriver/3DRenderPass/WebGLRenderContext3D";
 import { DirectionLightCom } from "../../d3/core/light/DirectionLightCom";
 import { Shader3D } from "../../RenderEngine/RenderShader/Shader3D";
-import { ShaderData } from "../DriverDesign/RenderDevice/ShaderData";
 import { SubShader } from "../../RenderEngine/RenderShader/SubShader";
 import { PlanarShadowConfig } from "../../d3/core/light/PlanarShadowConfig";
 import { WebGLRenderElement3D } from "../WebGLDriver/3DRenderPass/WebGLRenderElement3D";
@@ -26,7 +23,6 @@ import { RenderState } from "../RenderModuleData/Design/RenderState";
 import { BlendFactor } from "../../RenderEngine/RenderEnum/BlendFactor";
 import { StencilOperation } from "../../RenderEngine/RenderEnum/StencilOperation";
 import { CompareFunction } from "../../RenderEngine/RenderEnum/CompareFunction";
-import { RenderPassUtil } from "./RenderPassUtil";
 import { LayaGL } from "../../layagl/LayaGL";
 import { StatElement } from "../../layagl/StatisticsContext";
 
@@ -59,32 +55,13 @@ import { StatElement } from "../../layagl/StatisticsContext";
  */
 export class PlanarShadowRP {
     private _opaqueList: RenderListQueue;
-    private _tempLightDir: Vector3 = new Vector3();
     private _planarShader: Shader3D | null = null;
     /** @internal 绘制异常计数（仅用于日志节流） */
     private _psErr: number = 0;
     private _planarSubShader: SubShader | null = null;
     private _planarShaderPass: ShaderPass | null = null;
     private _compileDefine: WebDefineDatas = new WebDefineDatas();
-    /** @internal */
-    static PLANARSHADOW_LIGHTDIRECTION: number;
-    /** @internal */
-    static PLANARSHADOW_SHADOWPLANEY: number;
-    /** @internal */
-    static PLANARSHADOW_SHADOWOFFSET: number;
-    /** @internal */
-    static PLANARSHADOW_SHADOWCOLOR: number;
-    /** @internal */
-    static PLANARSHADOW_SHADOWINTENSITY: number;
 
-    /** @internal */
-    static __init__(): void {
-        PlanarShadowRP.PLANARSHADOW_LIGHTDIRECTION = Shader3D.propertyNameToID("u_LightDirection");
-        PlanarShadowRP.PLANARSHADOW_SHADOWPLANEY = Shader3D.propertyNameToID("u_ShadowPlaneY");
-        PlanarShadowRP.PLANARSHADOW_SHADOWOFFSET = Shader3D.propertyNameToID("u_ShadowOffset");
-        PlanarShadowRP.PLANARSHADOW_SHADOWCOLOR = Shader3D.propertyNameToID("u_ShadowColor");
-        PlanarShadowRP.PLANARSHADOW_SHADOWINTENSITY = Shader3D.propertyNameToID("u_ShadowIntensity");
-    }
 
     constructor() {
         this._opaqueList = new RenderListQueue(false);

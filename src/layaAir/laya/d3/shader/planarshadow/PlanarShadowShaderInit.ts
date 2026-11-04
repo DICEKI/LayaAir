@@ -4,7 +4,6 @@ import { Shader3D, ShaderFeatureType } from "../../../RenderEngine/RenderShader/
 import { SubShader } from "../../../RenderEngine/RenderShader/SubShader";
 import { ShaderDataType } from "../../../RenderDriver/DriverDesign/RenderDevice/ShaderData";
 import { RenderState } from "../../../RenderDriver/RenderModuleData/Design/RenderState";
-import { PlanarShadowRP } from "../../../RenderDriver/DriverCommon/PlanarShadowRP";
 import { Vector3 } from "../../../maths/Vector3";
 
 /**
@@ -15,12 +14,6 @@ import { Vector3 } from "../../../maths/Vector3";
  * 注册名为 "PlanarShadow" 的 shader，包含完整的渲染状态配置。
  * 此 shader 用于将物体顶点沿光照方向投影到地面平面，生成阴影。
  *
- * 【Shader 变量】
- * - u_LightDirection: 平行光方向（世界空间）
- * - u_ShadowPlaneY: 阴影平面 Y 坐标
- * - u_ShadowOffset: 阴影偏移量，用于防止 Z-fighting
- * - u_ShadowColor: 阴影颜色
- * - u_ShadowIntensity: 阴影强度（0-1）
  *
  * 【渲染状态配置】
  * - 混合: SrcAlpha + OneMinusSrcAlpha → 标准 alpha 混合
@@ -31,9 +24,9 @@ import { Vector3 } from "../../../maths/Vector3";
  * 【与 PlanarShadowRP 的关系】
  * - Shader 定义在此处，由 PlanarShadowRP 在运行时动态编译使用
  * - Stencil 配置在 Shader 和 PlanarShadowRP 中都有，保持同步一致
- * - PlanarShadowRP.__init__() 初始化 uniform property ID 映射
  */
 export class PlanarShadowShaderInit {
+
     static init() {
         // 定义 PlanarShadow shader 所需的 uniform 变量
         let uniformMap = {
@@ -84,8 +77,5 @@ export class PlanarShadowShaderInit {
         renderState.stencilTest = RenderState.STENCILTEST_NOTEQUAL;
         renderState.stencilWrite = true;
         renderState.stencilOp = new Vector3(RenderState.STENCILOP_KEEP, RenderState.STENCILOP_KEEP, RenderState.STENCILOP_REPLACE);
-
-        // 初始化 PlanarShadowRP 的 uniform property ID
-        PlanarShadowRP.__init__();
     }
 }
