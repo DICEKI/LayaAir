@@ -1,0 +1,56 @@
+name: Build Engine
+
+on:
+  push:
+  workflow_dispatch:
+
+# 同一分支有新提交时取消旧运行，省额度
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          # cache: npm          # ← 方案 A 才打开；lockfile 被 ignore 时打开会报错
+
+      - name: Install deps
+        run: npm install --no-audit --no-fund
+        # 方案 A 则改为: npm ci
+
+      # 可选：跑一下字节码检查
+      # - name: Check JS bytecode
+      #   run: npm run check:js-bytecode
+
+      - name: Build engine
+        run: npm run build
+
+      - name: Inspect output
+        run: |
+          echo "=== bin/ 结构 ==="
+          ls -laR bin/ | head -100
+          echo "=== 体积 ==="
+          du -sh bin/
+
+      - name: Verify output exists
+        run: |
+          if [ ! -d bin ] || [ -z "$(ls -A bin)" ]; then
+            echo "❌ bin/ 为空或不存在，构建未产出"
+            exit 1
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: layaair-engine-${{ github.sha }}
+          path: bin/
+          if-no-files-found: error
+          retention-days: 7
