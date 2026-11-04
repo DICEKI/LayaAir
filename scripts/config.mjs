@@ -27,7 +27,6 @@ export const allBundles = [{
         'laya/events/**/*.*',
         'laya/filters/**/*.*',
         'laya/layagl/**/*.*',
-        'laya/large/**/*.*',
         'laya/webgl/**/*.*',
 
         'laya/RenderDriver/DriverDesign/RenderDevice/**/*.*',
