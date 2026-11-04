@@ -35,15 +35,15 @@ jobs:
 
       - name: Inspect output
         run: |
-          echo "=== bin/ 结构 ==="
-          ls -laR bin/ | head -100
+          echo "=== build/ 结构 ==="
+          ls -laR build/ | head -100
           echo "=== 体积 ==="
-          du -sh bin/
+          du -sh build/
 
       - name: Verify output exists
         run: |
-          if [ ! -d bin ] || [ -z "$(ls -A bin)" ]; then
-            echo "❌ bin/ 为空或不存在，构建未产出"
+          if [ ! -d build ] || [ -z "$(ls -A build)" ]; then
+            echo "❌ build/ 为空或不存在，构建未产出"
             exit 1
           fi
 
@@ -51,6 +51,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: layaair-engine-${{ github.sha }}
-          path: bin/
+          path: build/
           if-no-files-found: error
           retention-days: 7
