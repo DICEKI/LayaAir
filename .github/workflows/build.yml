@@ -34,18 +34,24 @@ jobs:
         run: npm run build
 
       - name: Inspect output
+        shell: pwsh
         run: |
-          echo "=== build/ 结构 ==="
-          ls -laR build/ | head -100
-          echo "=== 体积 ==="
-          du -sh build/
+          Write-Host "=== build/ 结构 ==="
+          if (Test-Path build) {
+            Get-ChildItem -Recurse build | Select-Object -First 100 | Format-Table -AutoSize
+            $bytes = (Get-ChildItem -Recurse -File build | Measure-Object -Property Length -Sum).Sum
+            Write-Host ("=== 体积 === {0:N2} MB" -f ($bytes / 1MB))
+          } else {
+            Write-Host "build/ 不存在"
+          }
 
       - name: Verify output exists
+        shell: pwsh
         run: |
-          if [ ! -d build ] || [ -z "$(ls -A build)" ]; then
-            echo "❌ build/ 为空或不存在，构建未产出"
+          if (-not (Test-Path build) -or (Get-ChildItem build -Force | Measure-Object).Count -eq 0) {
+            Write-Error "❌ build/ 为空或不存在，构建未产出"
             exit 1
-          fi
+          }
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
